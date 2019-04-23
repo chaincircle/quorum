@@ -10,12 +10,6 @@ branches:
   only:
     - /.*/ # everything including tags
 
-env:
-  global:
-    - BINTRAY_ORGANIZATION=quorumengineering
-    - BINTRAY_USER=quorumbot
-    # Bintray API Key
-    - secure: "QHiPcd3zQoJEsT3VSpxoLVTYwbiYzS8H18EpY7Tk0EqCIfswS2AvRlyRXUxNvCf9ktzpaeXV4b5cPYJ67dwdp5V/O/ARaK5AL6ZjjrTPR1avPnmz/X2VeQEP0aWk1UGMs1nBUj5rzMbIIxlVhpbiITTLAI4Ao0+xRcBi215mDbv271Z7mACEZfXxjaoJA0/3IkbKz9pu1nC7bTjaaExCDAeLp2p8fHi2YQPnBll/7dkn/m1rnsIY9M3KWNCx6xBmQOr1hulrrB6tZoHwFBoDsVTFJFLckPfrWUZsYUgtfWJMQWc6ntv1gFl0f9x6s5fYEphCU2m1JYjEczlQ03B5ro9EyPGKjO7vQxAaFd5nVd2Xf34ZbssEIyXxlSnP/4Gv1GXl9L9aU1Hth9ckYvT5gYP5t/Nw3CDbKD0HelPBvkf8jZwfdlotzFPS2bOZNdl/rJLWgQrX18a/mC3BH9l4TSRz13tbRfo6YcC3Y/uOvG1n4GxzcVaWojAxn86SkknOczPTf2pk9F3JOcGVSYA2R4kGQAe+ErJH2X5g2sh1D5cCYDjQyl5rzWg6P3eK//HYW+mg2+TQ8k2iQVVSwFwrR0Yn4P+5cRDCW9mjtktgq1rTtslj41gSH49Avqr9oXGM2rqdcJPdN8dnmLMrAtmeSUNMMoexiRMmlF2OQKLrW3k="
 
 matrix:
   include:
