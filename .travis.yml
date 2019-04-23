@@ -2,6 +2,7 @@
 # 1. Distribute binaries to bintray from Tag
 # 2. Run quorum-acceptance-tests for Pull Requests
 
+
 language: go
 go_import_path: github.com/ethereum/go-ethereum
 go: 1.11.x
