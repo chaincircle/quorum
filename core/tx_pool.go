@@ -611,7 +611,7 @@ func (pool *TxPool) validateTx(tx *types.Transaction, local bool) error {
 	// Drop non-local transactions under our own minimal accepted gas price
 	local = local || pool.locals.contains(from) // account may be local even if the transaction arrived from the network
 
-	//@@@@ 重新启用gasprice
+	//@@@@ 重新启用gasprice,当交易指定的gasprice小于系统的最低gasprice,报错
 	//if !isQuorum && !local && pool.gasPrice.Cmp(tx.GasPrice()) > 0 {
 	if !local && pool.gasPrice.Cmp(tx.GasPrice()) > 0 {
 		return ErrUnderpriced

@@ -315,24 +315,33 @@ func TestInvalidTransactions(t *testing.T) {
 }
 
 //Test for transactions that are only invalid on Quorum
+//@@@@ 移除测试无效交易,因为现在要启用gasprice
 func TestQuorumInvalidTransactions(t *testing.T) {
 	pool, key := setupQuorumTxPool()
 	defer pool.Stop()
 
 	tx := transaction(0, 0, key)
-	if err := pool.AddRemote(tx); err != ErrInvalidGasPrice {
-		t.Error("expected", ErrInvalidGasPrice, "; got", err)
+	//@@@@
+	//if err := pool.AddRemote(tx); err != ErrInvalidGasPrice {
+	if err := pool.AddRemote(tx); err != ErrInsufficientFunds {
+		t.Error("expected", ErrInsufficientFunds, "; got", err)
 	}
 
 }
 
+//@@@@ 测试私有交易为交易数量为0
+//重新启用gasprice,
 func TestValidateTx_whenValueZeroTransferForPrivateTransaction(t *testing.T) {
 	pool, key := setupQuorumTxPool()
 	defer pool.Stop()
 	zeroValue := common.Big0
-	zeroGasPrice := common.Big0
+	//gasprice不能为0
+	//zeroGasPrice := common.Big0
+	//将gasprice改为系统默认的gasprice,50*1e9
+	defaultTXGasPrice := new(big.Int).SetUint64(50 * params.Shannon)
 	defaultTxPoolGasLimit := uint64(1000000)
-	arbitraryTx, _ := types.SignTx(types.NewTransaction(0, common.Address{}, zeroValue, defaultTxPoolGasLimit, zeroGasPrice, nil), types.HomesteadSigner{}, key)
+	//arbitraryTx, _ := types.SignTx(types.NewTransaction(0, common.Address{}, zeroValue, defaultTxPoolGasLimit, zeroGasPrice, nil), types.HomesteadSigner{}, key)
+	arbitraryTx, _ := types.SignTx(types.NewTransaction(0, common.Address{}, zeroValue, defaultTxPoolGasLimit, defaultTXGasPrice, nil), types.HomesteadSigner{}, key)
 	arbitraryTx.SetPrivate()
 
 	if err := pool.AddRemote(arbitraryTx); err != ErrEtherValueUnsupported {
@@ -340,6 +349,7 @@ func TestValidateTx_whenValueZeroTransferForPrivateTransaction(t *testing.T) {
 	}
 }
 
+//@@@@ 测试私有交易的交易数量为任意值
 func TestValidateTx_whenValueNonZeroTransferForPrivateTransaction(t *testing.T) {
 	pool, key := setupQuorumTxPool()
 	defer pool.Stop()
@@ -352,16 +362,23 @@ func TestValidateTx_whenValueNonZeroTransferForPrivateTransaction(t *testing.T) 
 	}
 }
 
+//@@@@ 构造一个私有交易
+//重新启用gasprice,
 func newPrivateTransaction(value *big.Int, data []byte, key *ecdsa.PrivateKey) (*types.Transaction, *big.Int, common.Address) {
-	zeroGasPrice := common.Big0
+	//gasprice不能为0
+	//zeroGasPrice := common.Big0
+	//将gasprice改为系统默认的gasprice,50*1e9
+	defaultTXGasPrice := new(big.Int).SetUint64(50 * params.Shannon)
 	defaultTxPoolGasLimit := uint64(1000000)
-	arbitraryTx, _ := types.SignTx(types.NewTransaction(0, common.Address{}, value, defaultTxPoolGasLimit, zeroGasPrice, data), types.HomesteadSigner{}, key)
+	//arbitraryTx, _ := types.SignTx(types.NewTransaction(0, common.Address{}, value, defaultTxPoolGasLimit, zeroGasPrice, data), types.HomesteadSigner{}, key)
+	arbitraryTx, _ := types.SignTx(types.NewTransaction(0, common.Address{}, value, defaultTxPoolGasLimit, defaultTXGasPrice, data), types.HomesteadSigner{}, key)
 	arbitraryTx.SetPrivate()
 	balance := new(big.Int).Add(arbitraryTx.Value(), new(big.Int).Mul(new(big.Int).SetUint64(arbitraryTx.Gas()), arbitraryTx.GasPrice()))
 	from, _ := deriveSender(arbitraryTx)
 	return arbitraryTx, balance, from
 }
 
+//@@@@ 测试私有合约的交易数量为任意值
 func TestValidateTx_whenValueNonZeroWithSmartContractForPrivateTransaction(t *testing.T) {
 	pool, key := setupQuorumTxPool()
 	defer pool.Stop()
