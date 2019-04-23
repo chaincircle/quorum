@@ -10,7 +10,6 @@ branches:
   only:
     - /.*/ # everything including tags
 
-
 matrix:
   include:
     #raft consensus
