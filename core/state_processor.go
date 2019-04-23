@@ -102,9 +102,10 @@ func ApplyTransaction(config *params.ChainConfig, bc *BlockChain, author *common
 		privateState = statedb
 	}
 
-	if config.IsQuorum && tx.GasPrice() != nil && tx.GasPrice().Cmp(common.Big0) > 0 {
-		return nil, nil, 0, ErrInvalidGasPrice
-	}
+	//@@@@ 重新启用gasprice
+	//if config.IsQuorum && tx.GasPrice() != nil && tx.GasPrice().Cmp(common.Big0) > 0 {
+	//	return nil, nil, 0, ErrInvalidGasPrice
+	//}
 
 	msg, err := tx.AsMessage(types.MakeSigner(config, header.Number))
 	if err != nil {

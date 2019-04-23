@@ -576,15 +576,20 @@ func (pool *TxPool) local() map[common.Address]types.Transactions {
 // validateTx checks whether a transaction is valid according to the consensus
 // rules and adheres to some heuristic limits of the local node (price and size).
 func (pool *TxPool) validateTx(tx *types.Transaction, local bool) error {
-	isQuorum := pool.chainconfig.IsQuorum
+	//@@@@ 重新启用gasprice
+	//isQuorum := pool.chainconfig.IsQuorum
+
 	sizeLimit := pool.chainconfig.TransactionSizeLimit
 	if sizeLimit == 0 {
 		sizeLimit = DefaultTxPoolConfig.TransactionSizeLimit
 	}
 
-	if isQuorum && tx.GasPrice().Cmp(common.Big0) != 0 {
-		return ErrInvalidGasPrice
-	}
+	//@@@@ 重新启用gasprice
+	//if isQuorum && tx.GasPrice().Cmp(common.Big0) != 0 {
+	//	return ErrInvalidGasPrice
+	//}
+
+
 	// Reject transactions over 32KB (or manually set limit) to prevent DOS attacks
 	if float64(tx.Size()) > float64(sizeLimit*1024) {
 		return ErrOversizedData
@@ -605,7 +610,10 @@ func (pool *TxPool) validateTx(tx *types.Transaction, local bool) error {
 	}
 	// Drop non-local transactions under our own minimal accepted gas price
 	local = local || pool.locals.contains(from) // account may be local even if the transaction arrived from the network
-	if !isQuorum && !local && pool.gasPrice.Cmp(tx.GasPrice()) > 0 {
+
+	//@@@@ 重新启用gasprice
+	//if !isQuorum && !local && pool.gasPrice.Cmp(tx.GasPrice()) > 0 {
+	if !local && pool.gasPrice.Cmp(tx.GasPrice()) > 0 {
 		return ErrUnderpriced
 	}
 	// Ensure the transaction adheres to nonce ordering
@@ -655,7 +663,10 @@ func (pool *TxPool) add(tx *types.Transaction, local bool) (bool, error) {
 	// If the transaction pool is full, discard underpriced transactions
 	if uint64(pool.all.Count()) >= pool.config.GlobalSlots+pool.config.GlobalQueue {
 		// If the new transaction is underpriced, don't accept it
-		if !pool.chainconfig.IsQuorum && !local && pool.priced.Underpriced(tx, pool.locals) {
+
+		//@@@@ 重新启用gasprice
+		//if !pool.chainconfig.IsQuorum && !local && pool.priced.Underpriced(tx, pool.locals) {
+		if  !local && pool.priced.Underpriced(tx, pool.locals) {
 			log.Trace("Discarding underpriced transaction", "hash", hash, "price", tx.GasPrice())
 			underpricedTxCounter.Inc(1)
 			return false, ErrUnderpriced
@@ -969,7 +980,8 @@ func (pool *TxPool) promoteExecutables(accounts []common.Address) {
 			pool.all.Remove(hash)
 			pool.priced.Removed()
 		}
-		if !isQuorum {
+		//@@@@ 重新启用gasprice
+		//if !isQuorum {
 			// Drop all transactions that are too costly (low balance or out of gas)
 			drops, _ := list.Filter(pool.currentState.GetBalance(addr), pool.currentMaxGas)
 			for _, tx := range drops {
@@ -979,7 +991,8 @@ func (pool *TxPool) promoteExecutables(accounts []common.Address) {
 				pool.priced.Removed()
 				queuedNofundsCounter.Inc(1)
 			}
-		}
+		//}
+
 		// Gather all executable transactions and promote them
 		for _, tx := range list.Ready(pool.pendingState.GetNonce(addr)) {
 			hash := tx.Hash()

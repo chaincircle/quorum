@@ -225,11 +225,12 @@ func (b *EthAPIBackend) ProtocolVersion() int {
 }
 
 func (b *EthAPIBackend) SuggestPrice(ctx context.Context) (*big.Int, error) {
-	if b.ChainConfig().IsQuorum {
-		return big.NewInt(0), nil
-	} else {
+	//@@@@ 重新启用gasprice
+	//if b.ChainConfig().IsQuorum {
+	//	return big.NewInt(0), nil
+	//} else {
 		return b.gpo.SuggestPrice(ctx)
-	}
+	//}
 }
 
 func (b *EthAPIBackend) ChainDb() ethdb.Database {
